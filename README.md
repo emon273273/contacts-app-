@@ -24,16 +24,15 @@ This is a simple web application for managing contacts. It allows users to creat
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/your-username/contact-management-app.git`
+1. Clone the repository: `https://github.com/emon273273/contacts-app-.git`
 2. Install dependencies: `npm install`
 3. Set up MongoDB database and configure connection string in `.env` file.
 4. Start the server: `npm start`
-5. Access the application in your web browser: `http://localhost:3000`
+5. Access the application in your web browser: 
 
 ## Contributing
 
 Contributions are welcome! Feel free to submit bug reports, feature requests, or pull requests to help improve this contact management app.
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+

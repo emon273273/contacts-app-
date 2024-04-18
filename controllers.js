@@ -1,6 +1,6 @@
 const { isValidObjectId } = require("mongoose");
 const Contact = require("./Contact");
-const { log } = require("console");
+const { log, error } = require("console");
 exports.getAllContact = (req, res) => {
   Contact.find()
     .then((contacts) => {
@@ -32,6 +32,8 @@ exports.getSingleContact = (req, res) => {
 exports.createContact = (req, res) => {
   let { name, phone, email } = req.body;
 
+  
+
   let error = {};
 
   if (!name) {
@@ -49,11 +51,11 @@ exports.createContact = (req, res) => {
   if (iserror) {
     Contact.find()
       .then((contacts) => {
-        res.render("index", { contacts, error }); // Render the view with error messages
+         return res.render("index", { contacts, error }); // Render the view with error messages
       })
       .catch((e) => {
         console.log(e);
-        res.json({ message: "Error Occurred" });
+       return  res.json({ message: "Error Occurred" });
       });
   } else {
     let contacts = new Contact({
@@ -121,22 +123,13 @@ exports.updateContact = (req, res) => {
 exports.deleteContact = (req, res) => {
   let { id } = req.params;
 
-  if (!isValidObjectId(id)) {
-    return res.status(400).json({
-      message: "invalid id formats",
-    });
-  }
+ Contact.findOneAndDelete({_id:id})
+ .then(()=>{
 
-  Contact.findOneAndDelete({
-    _id: id,
+  Contact.find()
+  .then(contacts=>{
+
+    res.render("index",{contacts,error:{}})
   })
-    .then((del) => {
-      res.json(del);
-    })
-    .catch((e) => {
-      console.log(e);
-      res.json({
-        message: "error occured",
-      });
-    });
+ })
 };

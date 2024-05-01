@@ -18,7 +18,7 @@
             <div class="my-4">
 
                 <h4>Create New contacts</h4>
-                <form action="/contacts" class="form-inline" method="POST">
+                <form action="/contacts" class="form-inline" method="POST" id="myform">
 
                     <div class="form-group mr-3">
                         <input type="text" name="name" placeholder="name" class="form-control <%= error.name ? 'is-invalid' : '' %>">
@@ -79,7 +79,12 @@
                             </td> -->
 
                             <td>
-                                <button class="btn btn-warning btn-sm">
+                                <button class="btn btn-warning btn-sm edit-button" 
+                                data-name="<%= contact.name %>" 
+                                data-phone="<%= contact.phone %>"
+                                data-email="<%= contact.email %>"
+                                data-id="<%= contact.id %>"
+                                >
                                     Edit
                                 </button>
                                 <a href="/contacts/delete/<%= contact._id%>" class="btn btn-danger btn-sm">
@@ -100,6 +105,38 @@
         crossorigin="anonymous">
     
     </script>
+
+
+<!--  this script for catch the editable data -->
+<script>
+window.onload=function(){
+    let editButton=document.getElementsByClassName("edit-button");
+
+    let form =document.getElementById('myform');
+
+   [...editButton].forEach(btn=>{
+    btn.addEventListener('click',function(e){
+
+       
+
+        // console.log(e.target.dataset)
+
+
+        // cath the data and fit it on the form
+        let {name,phone,email,id}=e.target.dataset
+
+        form[0].value=name
+        form[1].value=phone
+        form[2].value=email
+        form[3].value=id
+        form[4].value='update'
+    })
+   })
+
+}
+
+</script>
+
 </body>
 
 </html>

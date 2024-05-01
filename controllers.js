@@ -1,6 +1,6 @@
-const { isValidObjectId } = require("mongoose");
 const Contact = require("./Contact");
-const { log, error } = require("console");
+
+//get all contacts
 exports.getAllContact = (req, res) => {
   Contact.find()
     .then((contacts) => {
@@ -14,6 +14,7 @@ exports.getAllContact = (req, res) => {
     });
 };
 
+//get single contacts
 exports.getSingleContact = (req, res) => {
   let { id } = req.params;
 
@@ -29,10 +30,9 @@ exports.getSingleContact = (req, res) => {
     });
 };
 
+//create contract
 exports.createContact = (req, res) => {
-  let { name, phone, email } = req.body;
-
-  
+  let { name, phone, email, id } = req.body;
 
   let error = {};
 
@@ -51,40 +51,64 @@ exports.createContact = (req, res) => {
   if (iserror) {
     Contact.find()
       .then((contacts) => {
-         return res.render("index", { contacts, error }); // Render the view with error messages
+        return res.render("index", { contacts, error }); // Render the view with error messages
       })
       .catch((e) => {
         console.log(e);
-       return  res.json({ message: "Error Occurred" });
+        return res.json({ message: "Error Occurred" });
       });
   } else {
-    let contacts = new Contact({
-      name: name,
-      email: email,
-      phone: phone,
-    });
-
-    contacts
-      .save()
-      .then((c) => {
-        // Contact.find().then((contacts) => {
-        //   return res.render("index", { contacts, error: {} });
-        // });
-        Contact.find()
-          .then((contacts) => {
-            return res.render("index", { contacts, error: {} });
-          })
-          .catch((e) => {
-            console.log(e);
-            res.json({
-              message: "error occured",
-            });
+    if (id) {
+      Contact.findOneAndUpdate(
+        { _id: id },
+        {
+          $set: {
+            name,
+            email,
+            phone,
+          },
+        }
+      )
+        .then(() => {
+          Contact.find().then((contacts) => {
+            res.render("index", { contacts, error: {} });
           });
-      })
-      .catch((e) => {
-        console.log(e);
-        res.json({ message: "Error Occurred in save" });
+        })
+        .catch((e) => {
+          console.log(e);
+          return res.json({
+            message: "error occured",
+          });
+        });
+    } else {
+      let contacts = new Contact({
+        name: name,
+        email: email,
+        phone: phone,
       });
+
+      contacts
+        .save()
+        .then((c) => {
+          // Contact.find().then((contacts) => {
+          //   return res.render("index", { contacts, error: {} });
+          // });
+          Contact.find()
+            .then((contacts) => {
+              return res.render("index", { contacts, error: {} });
+            })
+            .catch((e) => {
+              console.log(e);
+              res.json({
+                message: "error occured",
+              });
+            });
+        })
+        .catch((e) => {
+          console.log(e);
+          res.json({ message: "Error Occurred in save" });
+        });
+    }
   }
 };
 
@@ -106,11 +130,11 @@ exports.updateContact = (req, res) => {
       },
     },
     {
-      new: true,
+      new: true, //always return new data
     }
   )
-    .then((newupdatecontact) => {
-      res.json(newupdatecontact);
+    .then((contact) => {
+      res.json(contact);
     })
     .catch((e) => {
       console.log(e);
@@ -123,13 +147,9 @@ exports.updateContact = (req, res) => {
 exports.deleteContact = (req, res) => {
   let { id } = req.params;
 
- Contact.findOneAndDelete({_id:id})
- .then(()=>{
-
-  Contact.find()
-  .then(contacts=>{
-
-    res.render("index",{contacts,error:{}})
-  })
- })
+  Contact.findOneAndDelete({ _id: id }).then(() => {
+    Contact.find().then((contacts) => {
+      res.render("index", { contacts, error: {} });
+    });
+  });
 };
